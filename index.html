@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Folder Play — Memories</title>
+    <style>
+        :root{--bg:#0f1724;--muted:#dcdee0}
+        body{font-family:sans-serif;background:var(--bg);color:#fff;margin:0}
+        header{display:flex;align-items:center;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.03)}
+        .logo{display:flex;align-items:center;gap:12px}
+        .logo .dot{width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;font-family:"Times New Roman"}
+        h1{font-size:18px;margin:0}
+        .muted{color:var(--muted);font-size:14px}
+        .top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+        button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:inherit;cursor:pointer}
+        button.primary{background:linear-gradient(90deg,#7c3aed,#06b6d4);border:none;color:#021826}
+        .slideshow{display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.5);padding:20px 10px;border-radius:5px;box-shadow:1px 1px 5px #fff}
+        .slideshow img{width:80vw;height:50vh;max-width:1080px;max-height:720px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,0.5);animation:fadeIn 1s ease-in-out}
+        .caption{margin-top:10px;font-size:18px;color:#ddd;animation:fadeIn 1s ease-in-out}
+        .controls{margin-top:15px;display:flex;gap:10px}
+        footer{padding:18px;text-align:center;color:var(--muted);font-size:13px;position:absolute;left:50%;bottom:0;transform:translateX(-50%)}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    </style>
+    <style>
+      :root{
+        --bg:#0f1724;
+        --accent:#ff5c8a;
+        --accent-2:#ffd166;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        font-family: 'Segoe UI', sans-serif;
+        color:#e6eef8;
+        
+        overflow:hidden;
+      }
+      .float-bg{
+        position:fixed;inset:0;pointer-events:none;
+        background-image: radial-gradient(circle at 10% 20%, rgba(255,92,138,0.08), transparent 5%), 
+                          radial-gradient(circle at 80% 80%, rgba(255,209,102,0.05), transparent 8%);
+        backdrop-filter:blur(6px) saturate(120%);
+      }
+      
+  
+      /* modal backdrop */
+      .backdrop{
+        position:fixed;inset:0;
+        background:linear-gradient(180deg, rgba(2,68,3,0.95), rgba(58,6,99,0.95));
+        display:flex;align-items:center;justify-content:center;
+        z-index:40;opacity:0;pointer-events:none;
+        transition:opacity .35s cubic-bezier(.2,.9,.2,1)
+      }
+      .backdrop.open{opacity:1;pointer-events:auto}
+  
+      /* modal card */
+      .modal{
+        width:min(720px,94vw);
+        background:rgb(0,0,0);
+        border-radius:18px;
+        padding:28px;
+        position:relative;
+        overflow:visible;
+        box-shadow:0 30px 80px rgba(2,6,23,0.7);
+        transform:translateY(10px) scale(.98);
+        opacity:0;
+        transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .45s ease;
+        border:1px solid rgba(255,255,255,0.04);
+      }
+      .backdrop.open .modal{transform:translateY(0) scale(1);opacity:1}
+  
+      /* pop animation accent */
+      @keyframes popIn{
+        0%{transform:scale(.6) rotate(-6deg);opacity:0}
+        60%{transform:scale(1.05) rotate(2deg);opacity:1}
+        100%{transform:scale(1) rotate(0)}
+      }
+      .modal.pop{animation:popIn .7s cubic-bezier(.2,.9,.3,1)}
+  
+      /* confetti pieces */
+      .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+      .confetti span{
+        position:absolute;width:10px;height:18px;border-radius:2px;
+        opacity:0;transform:translateY(-10px);
+      }
+      .c1{background:var(--accent);left:20%;top:-10%;animation:fall 1.8s forwards .05s}
+      .c2{background:var(--accent-2);left:40%;top:-15%;animation:fall 2.1s forwards .12s}
+      .c3{background:#80ffdb;left:60%;top:-12%;animation:fall 1.9s forwards .08s}
+      .c4{background:#9ad0ff;left:75%;top:-18%;animation:fall 2.3s forwards .18s}
+      .c5{background:#ffd1f0;left:85%;top:-8%;animation:fall 2.05s forwards .16s}
+      @keyframes fall{
+        0%{opacity:0;transform:translateY(-40px) rotate(0) scale(.8)}
+        30%{opacity:1}
+        100%{opacity:1;transform:translateY(420px) rotate(520deg) scale(1)}
+      }
+  
+      .modal .head{display:flex;align-items:center;gap:16px}
+      .meta h2{margin:0;font-size:18px}
+      .meta p{margin:4px 0 0;font-size:13px;opacity:0.9}
+      .message{margin-top:18px;font-size:16px;line-height:1.45}
+  
+      .close{
+        position:absolute;right:12px;top:12px;
+        border:0;background:transparent;
+        color:rgba(255,255,255,0.8);
+        font-size:20px;cursor:pointer;padding:8px;border-radius:8px
+      }
+      .close:hover{background:rgba(255,255,255,0.03)}
+  
+      .hearts{position:absolute;left:12px;bottom:12px;display:flex;gap:6px}
+      .heart{font-size:14px;transform-origin:center;opacity:0;animation:heartPop .9s ease forwards}
+      .heart:nth-child(1){animation-delay:.12s}
+      .heart:nth-child(2){animation-delay:.2s}
+      .heart:nth-child(3){animation-delay:.28s}
+      @keyframes heartPop{
+        0%{opacity:0;transform:translateY(8px) scale(.6)}
+        60%{opacity:1;transform:translateY(-8px) scale(1.15)}
+        100%{opacity:1;transform:translateY(-18px) scale(1)}
+      }
+  
+      @media (max-width:480px){
+        .modal{padding:18px;border-radius:14px}
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="dot">S+I</div>
+        <div>
+          <h1>Happay Birthday জান 🥰🥰</h1>
+          <div class="muted">নতুন জীবনে আমাকে পাশে রাখিও, হারাতে দিয়ো না আমায়, জানপাখি</div>
+        </div>
+      </div>
+      <div class="top-actions"><button id="openBtn">চিঠি</button></div>
+    </header>
+    
+    <div id="backdrop" class="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="modal" id="birthdayModal">
+        <button class="close" id="closeBtn" aria-label="বন্ধ করুন">✕</button>
+        <div class="confetti" aria-hidden="true">
+          <span class="c1"></span><span class="c2"></span><span class="c3"></span><span class="c4"></span><span class="c5"></span>
+        </div>
+        <div class="head">
+          <div class="meta">
+            <h2>শুভ জন্মদিন, বউ 😍😍</h2>
+            <p>আজকের এই বিশেষ মুহূর্তে, আমি চাই তুমি আমার পাশে থাকো সবসময়ের জন্য</p>
+          </div>
+        </div>
+        <div class="message">
+          <p>
+            তোমাকে কি বলবো বুঝতে পারছি না... আমার মনে হচ্ছে আমি সবচেয়ে সুখী মানুষ...<br/>
+            দিনশেষে আমার জন্য চিন্তা করার একজন মানুষ আছে...
+          </p>
+          <p>
+            জানো আজকে আমার সেরা একটা দিন ছিলো... <br/>
+            কখনো ভাবী নাই তোমাকে পাবো এত আপন করে... তোমাকে একবার পাইছি আর ছাড়বো না জান... <br/>
+            তুমি আমাকে বিশ্বাস করছো কখনো তোমার বিশ্বাস নষ্ট করবো না... সবসময় তোমাকে আগলে রাখবো... <br/>
+            জান তোমার জন্মদিন অনেক ভালো হবে... এইটা আমাদের জন্যে ভালো কিছু নিয়ে আসবে ইনশাআল্লাহ
+          </p>
+          <p>
+            জান চিন্তা করিও না দেখিও আমরা একদিন এইসব সমস্যা শেষ করে উঠবো আর একসাথে সারাজীবন থাকবো... <br/>
+            একদম মৃত্যুর আগ পর্যন্ত একসাথে থাকবো... ইনশাআল্লাহ
+          </p>
+        </div>
+        <br/>
+        <div class="hearts" aria-hidden="true">
+          <div class="heart">💗</div><div class="heart">💖</div><div class="heart">💞</div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="slideshow">
+      <img id="slide-img" src="" alt="memory">
+      <div id="slide-caption" class="caption"></div>
+      <div class="controls">
+        <button onclick="prevSlide()">⟨ Prev</button>
+        <button onclick="togglePlay()" id="play-btn">Pause</button>
+        <button onclick="nextSlide()">Next ⟩</button>
+      </div>
+    </div>
+    
+    <footer>বিশ্বাস করো একদিন আজকে যেমনভাবে হাটছি... সারাজীবন তোমাকে নিয়ে একা হাটবো... সারাজীবন এইরকমভাবেই ভালোবাসবো...❤️</footer>
+  
+    <script>
+      const slides=[
+        {src:'images/photo1.jpg',caption:'Happy Birthday... 🎂'},
+        {src:'images/photo2.png',caption:'এইটা দেখে প্রেমে পড়েছি'},
+        {src:'images/photo3.jpg',caption:'সর্বপ্রথম এই ফটো আমাকে দিয়েছো'},
+        {src:'images/photo4.jpg',caption:'তোমার জিমেইল থেকে নিছি... ভয় পাইছিলাম অনেক... যদি জানার পর কিছু বলো... তাই আগেই বলে দিছি...'},
+        {src:'images/photo5.jpg',caption:'ভুলবশত তোমার পাশে বসা... আমি আশা করি নাই'},
+        {src:'images/photo6.jpg',caption:'সবচেয়ে বেশি মিস করা শুরু করি এই সময়...'},
+        {src:'images/photo7.jpg',caption:'প্রথম একই ফ্রেমে'},
+        {src:'images/photo8.jpg',caption:'অনেক ভালো দিন ছিলো এটা'},
+        {src:'images/photo9.jpg',caption:'আমার সাহস বেড়ে গেছে... তাই ঘাড়ে হাত দিছি'},
+        {src:'images/photo10.jpg',caption:'আজকে তোমার সাহস বেড়ে গেছে তাই জড়িয়ে ধরছো... ভালোই লাগছে... জীবনে প্রথম কোনো মেয়ে জড়িয়ে ধরলো... আর শেষ জড়িয়ে ধরাটাও তুমিই হবা...'}
+      ];
+      let index=0,playing=true,timer=null;
+      function showSlide(i){
+        document.getElementById('slide-img').src=slides[i].src;
+        document.getElementById('slide-caption').textContent=slides[i].caption;
+      }
+      function nextSlide(){index=(index+1)%slides.length;showSlide(index);}
+      function prevSlide(){index=(index-1+slides.length)%slides.length;showSlide(index);}
+      function startAuto(){timer=setInterval(nextSlide,3500);playing=true;document.getElementById('play-btn').textContent='Pause';}
+      function stopAuto(){clearInterval(timer);playing=false;document.getElementById('play-btn').textContent='Play';}
+      function togglePlay(){playing?stopAuto():startAuto();}
+      showSlide(index);startAuto();
+    </script>
+    <script>
+      const openBtn = document.getElementById('openBtn');
+      const backdrop = document.getElementById('backdrop');
+      const modal = document.querySelector('.modal');
+      const closeBtn = document.getElementById('closeBtn');
+  
+      function openModal(){
+        backdrop.classList.add('open');
+        backdrop.setAttribute('aria-hidden','false');
+        modal.classList.remove('pop');
+        void modal.offsetWidth;
+        modal.classList.add('pop');
+        launchExtraConfetti();
+      }
+      function closeModal(){
+        backdrop.classList.remove('open');
+        backdrop.setAttribute('aria-hidden','true');
+      }
+      openBtn.addEventListener('click',openModal);
+      closeBtn.addEventListener('click',closeModal);
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+      backdrop.addEventListener('click', e =>{ if(e.target === backdrop) closeModal(); });
+  
+      function launchExtraConfetti(){
+        const container = document.querySelector('.confetti');
+        document.querySelectorAll('.confetti .extra').forEach(n=>n.remove());
+        for(let i=0;i<30;i++){
+          const el = document.createElement('span');
+          el.classList.add('extra');
+          el.style.left = Math.random()*100 + '%';
+          el.style.top = (Math.random()*10 - 15) + '%';
+          el.style.width = (6 + Math.random()*10) + 'px';
+          el.style.height = (10 + Math.random()*14) + 'px';
+          el.style.background = ['#ff5c8a','#ffd166','#9ad0ff','#80ffdb','#ffd1f0'][Math.floor(Math.random()*5)];
+          el.style.opacity = 0;
+          el.style.borderRadius = (Math.random()>0.5? '2px':'50%');
+          el.style.transform = 'translateY(-40px) rotate('+ (Math.random()*360) +'deg)';
+          el.style.transition = 'transform 1.9s cubic-bezier(.2,.7,.2,1), opacity .35s ease';
+          container.appendChild(el);
+          setTimeout(()=>{
+            el.style.opacity = 1;
+            el.style.transform = 'translateY(' + (420 + Math.random()*80) + 'px) rotate(' + (Math.random()*720) + 'deg)';
+          }, 30 + i*20);
+          setTimeout(()=> el.remove(), 2200 + i*30);
+        }
+      }
+    </script>
+  </body>
+</html>
