@@ -203,7 +203,7 @@
       }
       function nextSlide(){index=(index+1)%slides.length;showSlide(index);}
       function prevSlide(){index=(index-1+slides.length)%slides.length;showSlide(index);}
-      function startAuto(){timer=setInterval(nextSlide,3500);playing=true;document.getElementById('play-btn').textContent='Pause';}
+      function startAuto(){timer=setInterval(nextSlide,5000);playing=true;document.getElementById('play-btn').textContent='Pause';}
       function stopAuto(){clearInterval(timer);playing=false;document.getElementById('play-btn').textContent='Play';}
       function togglePlay(){playing?stopAuto():startAuto();}
       showSlide(index);startAuto();
